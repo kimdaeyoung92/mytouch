@@ -1,0 +1,33 @@
+#include "Descriptors.h"
+#include <LUFA/Drivers/USB/Core/Device.h>
+
+const USB_Descriptor_HIDReport_Datatype_t PROGMEM HIDReport[] = {
+    0x05, 0x0D, 0x09, 0x04, 0xA1, 0x01, 0x85, 0x01, 0x09, 0x22,
+    0xA1, 0x02, 0x09, 0x42, 0x15, 0x00, 0x25, 0x01, 0x75, 0x01,
+    0x95, 0x01, 0x81, 0x02, 0x95, 0x07, 0x81, 0x03, 0x05, 0x01,
+    0x09, 0x30, 0x09, 0x31, 0x16, 0x00, 0x00, 0x26, 0xFF, 0x7F,
+    0x75, 0x10, 0x95, 0x02, 0x81, 0x02, 0xC0, 0xC0
+};
+
+uint16_t CALLBACK_USB_GetDescriptor(
+    const uint16_t wValue,
+    const uint16_t wIndex,
+    const void** const DescriptorAddress
+) {
+    const uint8_t DescriptorType   = (wValue >> 8);
+    const uint8_t DescriptorNumber = (wValue & 0xFF);
+
+    void*    Address = NULL;
+    uint16_t Size    = NO_DESCRIPTOR;
+
+    switch (DescriptorType)
+    {
+        case DTYPE_HID:
+            Address = (void*)&HIDReport;
+            Size    = sizeof(HIDReport);
+            break;
+    }
+
+    *DescriptorAddress = Address;
+    return Size;
+}
